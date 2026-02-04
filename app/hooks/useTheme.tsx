@@ -1,4 +1,5 @@
-import { createContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface ColorScheme {
   bg: string;
@@ -92,5 +93,37 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const useTheme = () => {};
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem("darkMode").then((value) => {
+      if (value) setIsDarkMode(JSON.parse(value));
+    })
+  }, []);
+
+  const toggleDarkMode = async () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    await AsyncStorage.setItem("darkMode", JSON.stringify(newMode));
+  }
+
+  const colors = isDarkMode ? darkTheme : lightTheme;
+
+  return (
+    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode, colors}}>
+      {children}
+    </ThemeContext.Provider>
+  )
+};
+
+const useTheme = (): ThemeContextType => {
+  const context = useContext(ThemeContext);
+
+  if(!context) {
+    throw new Error("useTheme must be used within a Theme Provider");
+  }
+  return context;
+};
+
 export default useTheme;
