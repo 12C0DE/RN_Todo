@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { TouchableOpacity } from "react-native";
+import { Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createHomeStyles } from "../../assets/index";
 import useTheme from "../hooks/useTheme";
+import { Header, TodoInput } from "../../components";
 
 export default function Index() {
   const { colors, toggleDarkMode } = useTheme();
@@ -12,12 +13,14 @@ export default function Index() {
   return (
     <LinearGradient colors={colors.gradients.bg} style={homeStyles.container}>
       <SafeAreaView style={homeStyles.container}>
-        <TouchableOpacity
+        <Header />
+        <TodoInput />
+        <Pressable
           style={homeStyles.todoText}
           onPress={() => toggleDarkMode()}
         >
           Toggle Theme
-        </TouchableOpacity>
+        </Pressable>
       </SafeAreaView>
     </LinearGradient>
   );
